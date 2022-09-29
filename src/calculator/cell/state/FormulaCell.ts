@@ -1,12 +1,13 @@
-import {ValueCell, ValueType, Watcher} from './ValueCell';
+import {ValueCell} from './ValueCell';
+import {Modifier} from './Cell';
 
 export class FormulaCell {
   private myCell: ValueCell;
 
-  constructor(upstreamCell: ValueCell, fn: (value: ValueType) => ValueType) {
-    this.myCell = new ValueCell(fn(upstreamCell.val()));
+  constructor(upstreamCell: ValueCell, modifier: Modifier) {
+    this.myCell = new ValueCell(modifier(upstreamCell.val()));
     upstreamCell.addWatcher(newUpstreamValue =>
-      this.myCell.update(() => fn(newUpstreamValue))
+      this.myCell.update(() => modifier(newUpstreamValue))
     );
   }
 
@@ -14,7 +15,7 @@ export class FormulaCell {
     return this.myCell.val();
   }
 
-  public addWatcher(watcher: Watcher) {
+  public addWatcher(watcher) {
     return this.myCell.addWatcher(watcher);
   }
 }

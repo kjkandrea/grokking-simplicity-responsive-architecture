@@ -1,24 +1,31 @@
-import {ValueCell} from './state/ValueCell';
+import {Cell} from './state/Cell';
 
 export class ResultCellElement {
-  private readonly cellElement: HTMLInputElement;
+  private readonly cellElement: HTMLDListElement;
+  private readonly cell: Cell;
 
-  constructor(value: ValueCell) {
-    this.cellElement = this.generateCellElement();
-    value.addWatcher(
-      newValue => (this.cellElement.textContent = String(newValue))
-    );
+  constructor(cell: Cell, name: string) {
+    this.cell = cell;
+    this.cellElement = this.generateCellElement(name);
   }
 
   public element() {
     return this.cellElement;
   }
 
-  private generateCellElement() {
-    const cellElement = document.createElement('input');
-    cellElement.className = 'cell';
-    cellElement.readOnly = true;
+  val() {
+    return this.cell.val();
+  }
 
-    return cellElement;
+  private generateCellElement(name: string) {
+    const wrapperElement = document.createElement('dl');
+    const titleElement = document.createElement('dt');
+    const dataElement = document.createElement('dd');
+    wrapperElement.append(titleElement, dataElement);
+    titleElement.textContent = name;
+    dataElement.textContent = String(this.cell.val());
+    this.cell.addWatcher(value => (dataElement.textContent = String(value)));
+
+    return wrapperElement;
   }
 }

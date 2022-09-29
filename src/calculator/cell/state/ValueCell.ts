@@ -1,7 +1,6 @@
-export type ValueType = string | number;
-export type Watcher = (value: ValueType) => void;
+import {Cell, ValueType, Watcher} from './Cell';
 
-export class ValueCell {
+export class ValueCell implements Cell {
   private currentValue: ValueType;
   private watchers: Watcher[] = [];
 
@@ -21,7 +20,7 @@ export class ValueCell {
     this.watchers.forEach(watcher => watcher(newValue));
   }
 
-  public addWatcher(watcher: Watcher) {
+  public addWatcher(watcher) {
     this.watchers.push(watcher);
   }
 }

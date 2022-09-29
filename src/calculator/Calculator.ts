@@ -1,81 +1,64 @@
 import {InputCellElement} from './cell/InputCellElement';
 import {ValueCell} from './cell/state/ValueCell';
-
-type NumberSentence =
-  | 'ADDITION'
-  | 'SUBTRACTION'
-  | 'MULTIPLICATION'
-  | 'DIVISION';
+import {CompositionCell} from './cell/state/CompositionCell';
+import {Cell} from './cell/state/Cell';
+import {ResultCellElement} from './cell/ResultCellElement';
 
 export class Calculator {
-  static numberSentences = [
-    'ADDITION',
-    'SUBTRACTION',
-    'MULTIPLICATION',
-    'DIVISION',
-  ] as const;
+  private readonly valueCells: ValueCell[];
+  private resultCellMap: {
+    ADDITION: Cell;
+    SUBTRACTION: Cell;
+    MULTIPLICATION: Cell;
+    DIVISION: Cell;
+  };
 
-  private readonly rootElement: HTMLElement;
-  private valueCells: [ValueCell, ValueCell];
-
-  constructor(rootElement: HTMLElement) {
-    this.rootElement = rootElement;
-    this.valueCells = this.generateValueCells();
-  }
-
-  render() {
-    const wrapperElement = document.createElement('div');
-    const inputCellElements = this.generateInputCellElements();
-    wrapperElement.append(
-      ...inputCellElements.map(inputCellElement => inputCellElement.element())
-    );
-    const {ADDITION, SUBTRACTION, MULTIPLICATION, DIVISION} =
-      this.generateResultElementMap();
-    wrapperElement.append(ADDITION, SUBTRACTION, MULTIPLICATION, DIVISION);
-    this.rootElement.append(wrapperElement);
-  }
-
-  private generateValueCells(): [ValueCell, ValueCell] {
-    const [first, second] = [new ValueCell(5), new ValueCell(3)];
-    const valueCells = [first, second];
-    valueCells.forEach(valueCell =>
-      valueCell.addWatcher(() => {
-        const values = valueCells.map(valueCell => Number(valueCell.val()));
+  constructor(initialValue: number[]) {
+    this.valueCells = initialValue.map(value => new ValueCell(value));
+    this.resultCellMap = {
+      ADDITION: new CompositionCell(this.valueCells, values =>
+        values.map(Number).reduce((a, b) => a + b)
+      ),
+      SUBTRACTION: new CompositionCell(this.valueCells, values =>
+        values.map(Number).reduce((a, b) => a - b)
+      ),
+      MULTIPLICATION: new CompositionCell(this.valueCells, values => {
         console.log(values);
-      })
-    );
+        return values.map(Number).reduce((a, b) => a * b);
+      }),
+      DIVISION: new CompositionCell(this.valueCells, values =>
+        values.map(Number).reduce((a, b) => a / b)
+      ),
+    };
+  }
 
-    return [first, second];
+  render(rootElement: HTMLElement) {
+    const inputCellElements = this.generateInputCellElements();
+    const resultCellElements = Object.values(this.generateResultElementMap());
+    rootElement.append(
+      ...inputCellElements.map(inputCellElement => inputCellElement.element()),
+      ...resultCellElements.map(resultCellElement =>
+        resultCellElement.element()
+      )
+    );
   }
 
   private generateInputCellElements() {
-    return this.valueCells.map(valueCell =>
-      this.generateInputCellElement(valueCell)
-    );
-  }
-
-  private generateInputCellElement(valueCell: ValueCell) {
-    return new InputCellElement(valueCell);
+    return this.valueCells.map(valueCell => new InputCellElement(valueCell));
   }
 
   private generateResultElementMap() {
-    // eslint-disable-next-line node/no-unsupported-features/es-builtins
-    return Object.fromEntries(
-      Calculator.numberSentences.map(sentence => [
-        sentence,
-        this.generateResultElement(sentence),
-      ])
-    );
-  }
-
-  private generateResultElement(numberSentence: NumberSentence) {
-    const wrapperElement = document.createElement('dl');
-    const titleElement = document.createElement('dt');
-    const dataElement = document.createElement('dd');
-    wrapperElement.append(titleElement, dataElement);
-    titleElement.textContent = numberSentence;
-    dataElement.textContent = '9999'; // TODO
-
-    return wrapperElement;
+    return {
+      ADDITION: new ResultCellElement(this.resultCellMap.ADDITION, 'ADDITION'),
+      SUBTRACTION: new ResultCellElement(
+        this.resultCellMap.SUBTRACTION,
+        'SUBTRACTION'
+      ),
+      MULTIPLICATION: new ResultCellElement(
+        this.resultCellMap.MULTIPLICATION,
+        'MULTIPLICATION'
+      ),
+      DIVISION: new ResultCellElement(this.resultCellMap.DIVISION, 'DIVISION'),
+    };
   }
 }
