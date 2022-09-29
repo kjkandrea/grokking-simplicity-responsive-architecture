@@ -1,4 +1,4 @@
-export type ValueType = string | number;
+export type ValueType = string;
 type Watcher<T> = (value: T) => void;
 
 export class ValueCell<T extends ValueType = ValueType> {

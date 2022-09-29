@@ -1,14 +1,13 @@
-import {OnEmit} from '../../utils/OnEmit';
+import {ValueCell} from './state/ValueCell';
 
-export class InputCellElement extends OnEmit {
+export class InputCellElement {
   private readonly cellElement: HTMLInputElement;
+  private readonly valueCell: ValueCell;
 
-  constructor() {
-    super();
+  constructor(valueCell: ValueCell) {
     this.cellElement = this.generateCellElement();
-    this.cellElement.addEventListener('input', event =>
-      this.eventListener(event)
-    );
+    this.valueCell = valueCell;
+    this.attachEventListener();
   }
 
   public element() {
@@ -16,7 +15,7 @@ export class InputCellElement extends OnEmit {
   }
 
   public val() {
-    return this.cellElement.value;
+    return this.valueCell.val();
   }
 
   private generateCellElement() {
@@ -29,10 +28,9 @@ export class InputCellElement extends OnEmit {
     return cellElement;
   }
 
-  private eventListener(event: Event) {
-    this.emit(
-      `@${event.type}:input`,
-      (event.target as HTMLInputElement)?.value
+  private attachEventListener() {
+    this.cellElement.addEventListener('input', event =>
+      this.valueCell.update(() => (event.target as HTMLInputElement).value)
     );
   }
 }
