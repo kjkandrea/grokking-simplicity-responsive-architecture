@@ -24,3 +24,25 @@
 
 모두 같은 개념을 나타내는 이름입니다. 어떤 것이 더 올바른 이름이라고 할 수 없습니다.
 
+## 상태를 일급으로 관리합니다.
+
+다음은 변경 가능한 값을 일급으로 만드는 코드입니다.
+
+* [ValueCell](./src/calculator/cell/state/ValueCell.ts)
+
+* `val()` : 값을 읽습니다.
+* `update()` : 현재 값을 바꿉니다.
+* `addWatcher()` : 값이 변경되었을때 호출 될 감시자를 추가합니다. 
+
+## 파생된 값을 계산합니다.
+
+다음은 ValueCell 을 토대로 파생된 값을 계산하는 코드입니다.
+
+* [FormulaCell](./src/calculator/cell/state/FormulaCell.ts)
+* [CompositionCell](./src/calculator/cell/state/CompositionCell.ts)
+
+두 기본형은 값을 직접 바꿀 수 없습니다. 감시하던 상위(upstream) 셀 값이 바뀌면 값이 바뀝니다.
+상위 셀이 바뀌면 상위 값을 가지고 셀 값을 다시 계산합니다.
+
+* `val()` : 값을 읽습니다.
+* `addWatcher()` : 값이 변경되었을때 호출 될 감시자를 추가합니다.
