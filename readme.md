@@ -30,6 +30,8 @@
 
 * [ValueCell](./src/calculator/cell/state/ValueCell.ts)
 
+다음과 같은 기능을 지닙니다.
+
 * `val()` : 값을 읽습니다.
 * `update()` : 현재 값을 바꿉니다.
 * `addWatcher()` : 값이 변경되었을때 호출 될 감시자를 추가합니다. 
