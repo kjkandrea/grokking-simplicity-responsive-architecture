@@ -1,13 +1,6 @@
-import './style.css'
+import './style.css';
+import {CalculatorController} from './calculator/CalculatorController';
+import {CalculatorRenderer} from './calculator/CalculatorRenderer';
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+const rootElement = document.getElementById('app')!;
+new CalculatorController(new CalculatorRenderer(rootElement));
