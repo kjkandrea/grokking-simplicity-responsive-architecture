@@ -1,9 +1,9 @@
 export type ValueType = string | number;
-type Watcher<ValueType> = (value: ValueType) => void;
+export type Watcher = (value: ValueType) => void;
 
 export class ValueCell {
   private currentValue: ValueType;
-  private watchers: Watcher<ValueType>[] = [];
+  private watchers: Watcher[] = [];
 
   constructor(initialValue: ValueType) {
     this.currentValue = initialValue;
@@ -21,7 +21,7 @@ export class ValueCell {
     this.watchers.forEach(watcher => watcher(newValue));
   }
 
-  public addWatcher(watcher: Watcher<ValueType>) {
+  public addWatcher(watcher: Watcher) {
     this.watchers.push(watcher);
   }
 }
