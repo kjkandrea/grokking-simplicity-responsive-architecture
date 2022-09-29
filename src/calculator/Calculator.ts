@@ -1,16 +1,19 @@
+import {InputCellElement} from './cell/InputCellElement';
+
 type NumberSentence =
   | 'ADDITION'
   | 'SUBTRACTION'
   | 'MULTIPLICATION'
   | 'DIVISION';
-const numberSentences = [
-  'ADDITION',
-  'SUBTRACTION',
-  'MULTIPLICATION',
-  'DIVISION',
-] as const;
 
-export class CalculatorRenderer {
+export class Calculator {
+  static numberSentences = [
+    'ADDITION',
+    'SUBTRACTION',
+    'MULTIPLICATION',
+    'DIVISION',
+  ] as const;
+
   private readonly rootElement: HTMLElement;
 
   constructor(rootElement: HTMLElement) {
@@ -19,16 +22,27 @@ export class CalculatorRenderer {
 
   render() {
     const wrapperElement = document.createElement('div');
+    const inputCellElements = this.generateInputCellElements(2);
+    this.watchInputs(inputCellElements);
+    wrapperElement.append(
+      ...inputCellElements.map(inputCellElement => inputCellElement.element())
+    );
     const {ADDITION, SUBTRACTION, MULTIPLICATION, DIVISION} =
       this.generateResultElementMap();
     wrapperElement.append(ADDITION, SUBTRACTION, MULTIPLICATION, DIVISION);
     this.rootElement.append(wrapperElement);
   }
 
+  private generateInputCellElements(length: number) {
+    if (0 > length) throw Error('plz positive number');
+
+    return Array.from({length}, () => new InputCellElement());
+  }
+
   private generateResultElementMap() {
     // eslint-disable-next-line node/no-unsupported-features/es-builtins
     return Object.fromEntries(
-      numberSentences.map(sentence => [
+      Calculator.numberSentences.map(sentence => [
         sentence,
         this.generateResultElement(sentence),
       ])
@@ -44,5 +58,14 @@ export class CalculatorRenderer {
     dataElement.textContent = '9999'; // TODO
 
     return wrapperElement;
+  }
+
+  private watchInputs(inputs: InputCellElement[]) {
+    inputs.forEach(input =>
+      input.on('@input:input', () => {
+        const values = inputs.map(input => Number(input.val()));
+        console.log(values);
+      })
+    );
   }
 }

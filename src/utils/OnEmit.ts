@@ -1,4 +1,4 @@
-type EventName = 'click';
+type EventName = string;
 type EventId = string;
 type EventArgument = any;
 type SubscribeKey = `@${EventName}:${EventId}`;

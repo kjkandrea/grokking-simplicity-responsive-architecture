@@ -1,6 +1,6 @@
 import './style.css';
-import {CalculatorController} from './calculator/CalculatorController';
-import {CalculatorRenderer} from './calculator/CalculatorRenderer';
+import {Calculator} from './calculator/Calculator';
 
 const rootElement = document.getElementById('app')!;
-new CalculatorController(new CalculatorRenderer(rootElement));
+const calculator = new Calculator(rootElement);
+calculator.render();
