@@ -1,4 +1,5 @@
 import {InputCellElement} from './cell/InputCellElement';
+import {ValueCell} from './cell/state/ValueCell';
 
 type NumberSentence =
   | 'ADDITION'
@@ -15,15 +16,16 @@ export class Calculator {
   ] as const;
 
   private readonly rootElement: HTMLElement;
+  private valueCells: [ValueCell, ValueCell];
 
   constructor(rootElement: HTMLElement) {
     this.rootElement = rootElement;
+    this.valueCells = this.generateValueCells();
   }
 
   render() {
     const wrapperElement = document.createElement('div');
-    const inputCellElements = this.generateInputCellElements(2);
-    this.watchInputs(inputCellElements);
+    const inputCellElements = this.generateInputCellElements();
     wrapperElement.append(
       ...inputCellElements.map(inputCellElement => inputCellElement.element())
     );
@@ -33,10 +35,27 @@ export class Calculator {
     this.rootElement.append(wrapperElement);
   }
 
-  private generateInputCellElements(length: number) {
-    if (0 > length) throw Error('plz positive number');
+  private generateValueCells(): [ValueCell, ValueCell] {
+    const [first, second] = [new ValueCell(5), new ValueCell(3)];
+    const valueCells = [first, second];
+    valueCells.forEach(valueCell =>
+      valueCell.addWatcher(() => {
+        const values = valueCells.map(valueCell => Number(valueCell.val()));
+        console.log(values);
+      })
+    );
 
-    return Array.from({length}, () => new InputCellElement());
+    return [first, second];
+  }
+
+  private generateInputCellElements() {
+    return this.valueCells.map(valueCell =>
+      this.generateInputCellElement(valueCell)
+    );
+  }
+
+  private generateInputCellElement(valueCell: ValueCell) {
+    return new InputCellElement(valueCell);
   }
 
   private generateResultElementMap() {
@@ -58,14 +77,5 @@ export class Calculator {
     dataElement.textContent = '9999'; // TODO
 
     return wrapperElement;
-  }
-
-  private watchInputs(inputs: InputCellElement[]) {
-    inputs.forEach(input =>
-      input.on('@input:input', () => {
-        const values = inputs.map(input => Number(input.val()));
-        console.log(values);
-      })
-    );
   }
 }

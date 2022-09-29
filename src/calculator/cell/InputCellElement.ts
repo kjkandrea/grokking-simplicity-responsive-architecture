@@ -5,8 +5,8 @@ export class InputCellElement {
   private readonly valueCell: ValueCell;
 
   constructor(valueCell: ValueCell) {
-    this.cellElement = this.generateCellElement();
     this.valueCell = valueCell;
+    this.cellElement = this.generateCellElement();
     this.attachEventListener();
   }
 
@@ -14,12 +14,13 @@ export class InputCellElement {
     return this.cellElement;
   }
 
-  public val() {
+  val() {
     return this.valueCell.val();
   }
 
   private generateCellElement() {
     const cellElement = document.createElement('input');
+    cellElement.value = String(this.val());
     cellElement.className = 'cell';
     cellElement.type = 'number';
     cellElement.min = '0';
@@ -29,7 +30,7 @@ export class InputCellElement {
   }
 
   private attachEventListener() {
-    this.cellElement.addEventListener('input', event =>
+    this.cellElement.addEventListener('change', event =>
       this.valueCell.update(() => (event.target as HTMLInputElement).value)
     );
   }

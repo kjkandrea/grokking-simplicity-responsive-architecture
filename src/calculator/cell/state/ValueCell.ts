@@ -1,11 +1,11 @@
-export type ValueType = string;
-type Watcher<T> = (value: T) => void;
+export type ValueType = string | number;
+type Watcher<ValueType> = (value: ValueType) => void;
 
-export class ValueCell<T extends ValueType = ValueType> {
-  private currentValue: T;
-  private watchers: Watcher<T>[] = [];
+export class ValueCell {
+  private currentValue: ValueType;
+  private watchers: Watcher<ValueType>[] = [];
 
-  constructor(initialValue: T) {
+  constructor(initialValue: ValueType) {
     this.currentValue = initialValue;
   }
 
@@ -13,7 +13,7 @@ export class ValueCell<T extends ValueType = ValueType> {
     return this.currentValue;
   }
 
-  public update(fn: (oldValue: T) => T) {
+  public update(fn: (oldValue: ValueType) => ValueType) {
     const oldValue = this.currentValue;
     const newValue = fn(oldValue);
     if (oldValue === newValue) return;
@@ -21,7 +21,7 @@ export class ValueCell<T extends ValueType = ValueType> {
     this.watchers.forEach(watcher => watcher(newValue));
   }
 
-  public addWatcher(watcher: Watcher<T>) {
+  public addWatcher(watcher: Watcher<ValueType>) {
     this.watchers.push(watcher);
   }
 }
